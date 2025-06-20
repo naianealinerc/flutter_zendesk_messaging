@@ -80,15 +80,6 @@ class ZendeskMessagingPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 zendeskMessaging.logoutUser(result)
             }
 
-//            "getUnreadMessageCount" -> {
-//                if (!isInitialized) {
-//                    println("$tag - Zendesk SDK needs to be initialized first")
-//                    reportNotInitializedFlutterError(result)
-//                    return
-//                }
-//                result.success(zendeskMessaging.getUnreadMessageCount())
-//            }
-
             "listenUnreadMessages" -> {
                 if (!isInitialized) {
                     println("$tag - Zendesk SDK needs to be initialized first")
@@ -105,36 +96,6 @@ class ZendeskMessagingPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                     result.error("listen_unread_messages_error", err.message, null)
                 }
             }
-
-//            "setConversationTags" -> {
-//                if (!isInitialized) {
-//                    println("$tag - Zendesk SDK needs to be initialized first")
-//                    reportNotInitializedFlutterError(result)
-//                    return
-//                }
-//
-//                try {
-//                    val tags = call.argument<List<String>>("tags")
-//                        ?: throw Exception("tags is empty or null")
-//
-//                    zendeskMessaging.setConversationTags(tags)
-//                    result.success(null)
-//                } catch (err: Throwable) {
-//                    println("$tag - ZendeskMessaging::setConversationTags invalid arguments. {'tags': '<your_tags>'} expected !")
-//                    println(err.message)
-//                    result.error("set_conversation_tags_error", err.message, null)
-//                }
-//            }
-//
-//            "clearConversationTags" -> {
-//                if (!isInitialized) {
-//                    println("$tag - Zendesk SDK needs to be initialized first")
-//                    reportNotInitializedFlutterError(result)
-//                    return
-//                }
-//                zendeskMessaging.clearConversationTags()
-//                result.success(null)
-//            }
 
             "setConversationFields" -> {
                 if (!isInitialized) {
@@ -165,16 +126,6 @@ class ZendeskMessagingPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 zendeskMessaging.clearConversationFields()
                 result.success(null)
             }
-
-//            "invalidate" -> {
-//                if (!isInitialized) {
-//                    println("$tag - Zendesk SDK is already on an invalid state")
-//                    reportNotInitializedFlutterError(result)
-//                    return
-//                }
-//                zendeskMessaging.invalidate()
-//                result.success(null)
-//            }
 
             else -> {
                 result.notImplemented()
