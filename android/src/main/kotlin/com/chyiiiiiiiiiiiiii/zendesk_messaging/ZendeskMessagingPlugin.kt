@@ -8,6 +8,7 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 
+
 /** ZendeskMessagingPlugin */
 class ZendeskMessagingPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     /// The MethodChannel that will the communication between Flutter and native Android
@@ -33,6 +34,7 @@ class ZendeskMessagingPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
         when (call.method) {
             "initialize" -> {
                 val channelKey = call.argument<String>("channelKey")!!
+
                 zendeskMessaging.initialize(channelKey, result)
             }
 
@@ -78,14 +80,14 @@ class ZendeskMessagingPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 zendeskMessaging.logoutUser(result)
             }
 
-            "getUnreadMessageCount" -> {
-                if (!isInitialized) {
-                    println("$tag - Zendesk SDK needs to be initialized first")
-                    reportNotInitializedFlutterError(result)
-                    return
-                }
-                result.success(zendeskMessaging.getUnreadMessageCount())
-            }
+//            "getUnreadMessageCount" -> {
+//                if (!isInitialized) {
+//                    println("$tag - Zendesk SDK needs to be initialized first")
+//                    reportNotInitializedFlutterError(result)
+//                    return
+//                }
+//                result.success(zendeskMessaging.getUnreadMessageCount())
+//            }
 
             "listenUnreadMessages" -> {
                 if (!isInitialized) {
@@ -104,35 +106,35 @@ class ZendeskMessagingPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 }
             }
 
-            "setConversationTags" -> {
-                if (!isInitialized) {
-                    println("$tag - Zendesk SDK needs to be initialized first")
-                    reportNotInitializedFlutterError(result)
-                    return
-                }
-
-                try {
-                    val tags = call.argument<List<String>>("tags")
-                        ?: throw Exception("tags is empty or null")
-
-                    zendeskMessaging.setConversationTags(tags)
-                    result.success(null)
-                } catch (err: Throwable) {
-                    println("$tag - ZendeskMessaging::setConversationTags invalid arguments. {'tags': '<your_tags>'} expected !")
-                    println(err.message)
-                    result.error("set_conversation_tags_error", err.message, null)
-                }
-            }
-
-            "clearConversationTags" -> {
-                if (!isInitialized) {
-                    println("$tag - Zendesk SDK needs to be initialized first")
-                    reportNotInitializedFlutterError(result)
-                    return
-                }
-                zendeskMessaging.clearConversationTags()
-                result.success(null)
-            }
+//            "setConversationTags" -> {
+//                if (!isInitialized) {
+//                    println("$tag - Zendesk SDK needs to be initialized first")
+//                    reportNotInitializedFlutterError(result)
+//                    return
+//                }
+//
+//                try {
+//                    val tags = call.argument<List<String>>("tags")
+//                        ?: throw Exception("tags is empty or null")
+//
+//                    zendeskMessaging.setConversationTags(tags)
+//                    result.success(null)
+//                } catch (err: Throwable) {
+//                    println("$tag - ZendeskMessaging::setConversationTags invalid arguments. {'tags': '<your_tags>'} expected !")
+//                    println(err.message)
+//                    result.error("set_conversation_tags_error", err.message, null)
+//                }
+//            }
+//
+//            "clearConversationTags" -> {
+//                if (!isInitialized) {
+//                    println("$tag - Zendesk SDK needs to be initialized first")
+//                    reportNotInitializedFlutterError(result)
+//                    return
+//                }
+//                zendeskMessaging.clearConversationTags()
+//                result.success(null)
+//            }
 
             "setConversationFields" -> {
                 if (!isInitialized) {
@@ -164,15 +166,15 @@ class ZendeskMessagingPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
                 result.success(null)
             }
 
-            "invalidate" -> {
-                if (!isInitialized) {
-                    println("$tag - Zendesk SDK is already on an invalid state")
-                    reportNotInitializedFlutterError(result)
-                    return
-                }
-                zendeskMessaging.invalidate()
-                result.success(null)
-            }
+//            "invalidate" -> {
+//                if (!isInitialized) {
+//                    println("$tag - Zendesk SDK is already on an invalid state")
+//                    reportNotInitializedFlutterError(result)
+//                    return
+//                }
+//                zendeskMessaging.invalidate()
+//                result.success(null)
+//            }
 
             else -> {
                 result.notImplemented()
@@ -189,22 +191,31 @@ class ZendeskMessagingPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
     }
 
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+        println("$tag - onDetachedFromEngine() chamado")
+
         channel.setMethodCallHandler(null)
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
+        println("$tag - onAttachedToActivity() chamado com: ${binding.activity}")
+
         activity = binding.activity
     }
 
     override fun onDetachedFromActivityForConfigChanges() {
+        println("$tag - onDetachedFromActivity() chamado")
         activity = null
     }
 
     override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
+        println("$tag - onReattachedToActivityForConfigChanges() chamado")
+
         activity = binding.activity
     }
 
     override fun onDetachedFromActivity() {
+        println("$tag - onDetachedFromActivity() chamado")
+
         activity = null
     }
 

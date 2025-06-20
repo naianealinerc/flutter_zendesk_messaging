@@ -7,6 +7,8 @@ import zendesk.android.events.ZendeskEvent
 import zendesk.android.events.ZendeskEventListener
 import zendesk.messaging.android.DefaultMessagingFactory
 
+
+
 class ZendeskMessaging(
     private val plugin: ZendeskMessagingPlugin,
     private val channel: MethodChannel
@@ -27,7 +29,6 @@ class ZendeskMessaging(
                     UNREAD_MESSAGES,
                     mapOf("messages_count" to zendeskEvent.currentUnreadCount)
                 )
-
             }
 
             else -> {
@@ -38,6 +39,12 @@ class ZendeskMessaging(
 
     fun initialize(channelKey: String, result: MethodChannel.Result) {
         println("$TAG - Channel Key - $channelKey")
+        if (plugin.isInitialized) {
+            println("$TAG - Já inicializado, ignorando nova chamada")
+            result.success(null)
+            return
+        }
+
         Zendesk.initialize(
             plugin.activity!!,
             channelKey,
@@ -55,31 +62,15 @@ class ZendeskMessaging(
         )
     }
 
-    fun invalidate() {
-        Zendesk.instance.removeEventListener(zendeskEventListener)
-        Zendesk.invalidate()
-        plugin.isInitialized = false
-        println("$TAG - invalidated")
-    }
-
     fun show() {
-        Zendesk.instance.messaging.showMessaging(plugin.activity!!, Intent.FLAG_ACTIVITY_NEW_TASK)
-        println("$TAG - show")
-    }
-
-    fun getUnreadMessageCount(): Int =
-        try {
-            Zendesk.instance.messaging.getUnreadMessageCount()
-        } catch (error: Throwable) {
-            0
+        println("$TAG - show() chamado")
+        val currentActivity = plugin.activity
+        if (currentActivity == null || currentActivity.isFinishing) {
+            println("$TAG - activity está nula ou finalizando. Ignorando showMessaging.")
+            return
         }
-
-    fun setConversationTags(tags: List<String>) {
-        Zendesk.instance.messaging.setConversationTags(tags)
-    }
-
-    fun clearConversationTags() {
-        Zendesk.instance.messaging.clearConversationTags()
+        Zendesk.instance.messaging.showMessaging(currentActivity, Intent.FLAG_ACTIVITY_NEW_TASK)
+        println("$TAG - show")
     }
 
     fun loginUser(jwt: String, result: MethodChannel.Result) {
@@ -96,6 +87,7 @@ class ZendeskMessaging(
             })
     }
 
+
     fun logoutUser(result: MethodChannel.Result) {
         Zendesk.instance.logoutUser(successCallback = {
             plugin.isLoggedIn = false
@@ -108,7 +100,6 @@ class ZendeskMessaging(
     }
 
     fun listenMessageCountChanged() {
-        // To add the event listener to your Zendesk instance:
         Zendesk.instance.addEventListener(zendeskEventListener)
     }
 
